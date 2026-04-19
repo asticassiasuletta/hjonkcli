@@ -1,6 +1,8 @@
 # hjonkcli
 read the sidebar bleh
 
+![demo screenshot](./assets/hjonkclidemo.png)
+
 ***i do not have a windows version, please use WSL2 if you need windows support***
 
 # installation
