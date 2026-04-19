@@ -1,6 +1,8 @@
 # hjonkcli
 read the sidebar bleh
 
+*** i do not have a windows version, please use WSL2 if you need windows support***
+
 # installation
 dependencies: ```gcc, pkgconf/pkg-config, libcurl, libcjson```
 on arch? use the aur
