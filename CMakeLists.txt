@@ -10,7 +10,7 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 find_package(CURL CONFIG REQUIRED)
 find_package(cJSON CONFIG REQUIRED)
 
-add_executable(hjonk hjonk.c)
+add_executable(hjonkapi hjonk.c)
 
 target_link_libraries(hjonk
     PRIVATE
@@ -20,7 +20,7 @@ target_link_libraries(hjonk
 
 # Windows system libs curl depends on
 if(WIN32)
-    target_link_libraries(hjonk PRIVATE
+    target_link_libraries(hjonkcli PRIVATE
         ws2_32
         wldap32
         crypt32

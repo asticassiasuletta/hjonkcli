@@ -25,7 +25,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: hjonk-windows
-          path: build/Release/hjonk.exe
+          path: build/Release/hjonkcli.exe
 
   release:
     needs: [build-windows]
