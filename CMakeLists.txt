@@ -7,8 +7,8 @@ set(CMAKE_C_STANDARD 11)
 set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 
-find_package(CURL REQUIRED)
-find_package(cJSON REQUIRED)
+find_package(CURL CONFIG REQUIRED)
+find_package(cJSON CONFIG REQUIRED)
 
 add_executable(hjonk hjonk.c)
 

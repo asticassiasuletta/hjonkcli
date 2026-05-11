@@ -18,6 +18,13 @@ gcc hjonk.c -libcurl -libcjson -o hjonkcli
 (sudo) mv hjonkcli /local/usr/bin/hjonkcli
 ```
 
+on windows? download from winget when it's setup
+```winget install suletta.hjonkcli```
+or build it yourself using mingw64, dependencies:
+```mingw-w64-x86_64-gcc mingw-w64-x86_64-curl-winssl mingw-w64-x86_64-cjson```
+build:
+```gcc hjonk.c -static -lcurl -lcjson -lws2_32 -lwldap32 -lcrypt32 -lbcrypt -o hjonk.exe```
+
 # usage
 run ```hjonkcli``` for instructions but the tl:dr is
 make a new api key

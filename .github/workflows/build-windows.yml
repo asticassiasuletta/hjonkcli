@@ -18,7 +18,9 @@ jobs:
           vcpkg install curl:x64-windows-static cjson:x64-windows-static
       - name: build
         run: |
-          cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+          cmake -B build -S . `
+            -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static
           cmake --build build --config Release
       - uses: actions/upload-artifact@v4
         with:
@@ -28,11 +30,11 @@ jobs:
   release:
     needs: [build-windows]
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/download-artifact@v4
       - name: create release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            hjonk-linux/hjonk
             hjonk-windows/hjonk.exe
