@@ -10,9 +10,9 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 find_package(CURL CONFIG REQUIRED)
 find_package(cJSON CONFIG REQUIRED)
 
-add_executable(hjonkapi hjonk.c)
+add_executable(hjonkcli hjonk.c)
 
-target_link_libraries(hjonk
+target_link_libraries(hjonkcli
     PRIVATE
     CURL::libcurl
     cjson
