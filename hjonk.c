@@ -15,7 +15,15 @@
 #define V1_URL     BASE_URL "v1.0/"
 #define POST_URL   BASE_URL "token/post/create/"
 #define PLATFORM   "curl"
+#ifdef _WIN32
+#define TOKEN_DIR  "\\AppData\\Roaming\\hjonk"
+#define TOKEN_FILE "\\AppData\\Roaming\\hjonk\\token"
+#define HOME_ENV   "USERPROFILE"
+#else
+#define TOKEN_DIR  "/.config/hjonk"
 #define TOKEN_FILE "/.config/hjonk/token"
+#define HOME_ENV   "HOME"
+#endif
 #define MAXLEN     500
 
 typedef struct {
@@ -34,7 +42,7 @@ size_t write_cb(char *ptr, size_t size, size_t nmemb, void *userdata) {
 }
 
 char *token_path(void) {
-    const char *home = getenv("HOME");
+    const char *home = getenv(HOME_ENV);
     if (!home) return NULL;
     char *path = malloc(strlen(home) + strlen(TOKEN_FILE) + 1);
     sprintf(path, "%s%s", home, TOKEN_FILE);
@@ -55,10 +63,10 @@ char *load_token(void) {
 }
 
 int save_token(const char *token) {
-    const char *home = getenv("HOME");
+    const char *home = getenv(HOME_ENV);
     if (!home) return 0;
     char dir[512];
-    snprintf(dir, sizeof(dir), "%s/.config/hjonk", home);
+    snprintf(dir, sizeof(dir), "%s%s", home, TOKEN_DIR);
     MKDIR(dir);
     char *path = token_path();
     FILE *f = fopen(path, "w");
