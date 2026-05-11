@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <sys/stat.h>
 #ifdef _WIN32
 #include <direct.h>
@@ -97,6 +98,31 @@ cJSON *get_json(const char *url) {
     return json;
 }
 
+// "2026-05-11T02:13:52.000000Z" -> "2026-05-11 02:13" in local time
+const char *format_date(const char *iso) {
+    static char buf[32];
+    if (!iso || strlen(iso) < 19) return iso;
+
+    struct tm t = {0};
+    sscanf(iso, "%d-%d-%dT%d:%d:%d",
+        &t.tm_year, &t.tm_mon, &t.tm_mday,
+        &t.tm_hour, &t.tm_min, &t.tm_sec);
+    t.tm_year -= 1900;
+    t.tm_mon  -= 1;
+    t.tm_isdst = -1;
+
+    // interpret as UTC
+#ifdef _WIN32
+    time_t utc = _mkgmtime(&t);
+#else
+    time_t utc = timegm(&t);
+#endif
+
+    struct tm *local = localtime(&utc);
+    strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M", local);
+    return buf;
+}
+
 const char *jstr(cJSON *obj, const char *key) {
     cJSON *item = cJSON_GetObjectItem(obj, key);
     return (item && cJSON_IsString(item)) ? item->valuestring : NULL;
@@ -112,7 +138,7 @@ void print_post(cJSON *post, const char *handle) {
         return;
 
     const char *created = jstr(post, "created_at");
-    printf("[user %d]  %s\n", jint(post, "user_id"), created ? created : "");
+    printf("[user %d]  %s\n", jint(post, "user_id"), created ? format_date(created) : "");
 
     cJSON *reply_to = cJSON_GetObjectItem(post, "replying_to");
     if (reply_to && !cJSON_IsNull(reply_to))
