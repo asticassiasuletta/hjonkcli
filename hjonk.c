@@ -285,11 +285,30 @@ void cmd_post(const char *token, const char *content, const char *filepath) {
 
     long http_code = 0;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-    printf("HTTP %ld\n", http_code);
-    if (buf.data && *buf.data)
-        printf("%s\n", buf.data);
-    free(buf.data);
 
+    if (http_code == 200 && buf.data) {
+        cJSON *resp = cJSON_Parse(buf.data);
+        if (resp && cJSON_IsTrue(cJSON_GetObjectItem(resp, "ok")))
+            printf("posted!\n");
+        else
+            printf("error: server rejected the post\n");
+        cJSON_Delete(resp);
+    } else if (http_code == 413) {
+        fprintf(stderr, "error: file too large\n");
+    } else if (http_code == 415 || http_code == 422) {
+        fprintf(stderr, "error: file type unsupported\n");
+    } else if (http_code == 401 || http_code == 403) {
+        fprintf(stderr, "error: invalid token\n");
+    } else if (http_code >= 500) {
+        fprintf(stderr, "error: server error (HTTP %ld)\n", http_code);
+    } else if (buf.data && buf.data[0] == '<') {
+        // got HTML back — likely redirected due to bad token or unsupported file
+        fprintf(stderr, "error: request rejected (unsupported file type or bad token)\n");
+    } else {
+        fprintf(stderr, "error: HTTP %ld\n", http_code);
+    }
+
+    free(buf.data);
     curl_easy_cleanup(curl);
 }
 
@@ -363,11 +382,29 @@ void cmd_reply(const char *token, const char *post_id, const char *content, cons
 
     long http_code = 0;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-    printf("HTTP %ld\n", http_code);
-    if (buf.data && *buf.data)
-        printf("%s\n", buf.data);
-    free(buf.data);
 
+    if (http_code == 200 && buf.data) {
+        cJSON *resp = cJSON_Parse(buf.data);
+        if (resp && cJSON_IsTrue(cJSON_GetObjectItem(resp, "ok")))
+            printf("replied!\n");
+        else
+            printf("error: server rejected the reply\n");
+        cJSON_Delete(resp);
+    } else if (http_code == 413) {
+        fprintf(stderr, "error: file too large\n");
+    } else if (http_code == 415 || http_code == 422) {
+        fprintf(stderr, "error: file type unsupported\n");
+    } else if (http_code == 401 || http_code == 403) {
+        fprintf(stderr, "error: invalid token\n");
+    } else if (http_code >= 500) {
+        fprintf(stderr, "error: server error (HTTP %ld)\n", http_code);
+    } else if (buf.data && buf.data[0] == '<') {
+        fprintf(stderr, "error: request rejected (unsupported file type or bad token)\n");
+    } else {
+        fprintf(stderr, "error: HTTP %ld\n", http_code);
+    }
+
+    free(buf.data);
     curl_easy_cleanup(curl);
 }
 
