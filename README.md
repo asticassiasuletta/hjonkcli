@@ -24,7 +24,7 @@ or build it yourself using mingw64, dependencies:
 ```mingw-w64-x86_64-gcc mingw-w64-x86_64-curl-winssl mingw-w64-x86_64-cjson```
 build:
 ```gcc hjonk.c -static -lcurl -lcjson -lws2_32 -lwldap32 -lcrypt32 -lbcrypt -o hjonk.exe```
-
+doesn't work? figure it out yourself i'm too tired for this shit
 # usage
 run ```hjonkcli``` for instructions but the tl:dr is
 make a new api key
