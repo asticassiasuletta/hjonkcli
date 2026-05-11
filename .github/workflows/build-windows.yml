@@ -1,0 +1,48 @@
+name: build
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install deps
+        run: sudo apt-get install -y libcurl4-openssl-dev libcjson-dev
+      - name: build
+        run: gcc hjonk.c -lcurl -lcjson -o hjonk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hjonk-linux
+          path: hjonk
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install vcpkg deps
+        run: |
+          vcpkg install curl:x64-windows-static cjson:x64-windows-static
+      - name: build
+        run: |
+          cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+          cmake --build build --config Release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hjonk-windows
+          path: build/Release/hjonk.exe
+
+  release:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+      - name: create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            hjonk-linux/hjonk
+            hjonk-windows/hjonk.exe

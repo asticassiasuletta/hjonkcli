@@ -2,6 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#ifdef _WIN32
+#include <direct.h>
+#define MKDIR(p) _mkdir(p)
+#else
+#define MKDIR(p) mkdir(p, 0700)
+#endif
 #include <curl/curl.h>
 #include <cjson/cJSON.h>
 
@@ -53,7 +59,7 @@ int save_token(const char *token) {
     if (!home) return 0;
     char dir[512];
     snprintf(dir, sizeof(dir), "%s/.config/hjonk", home);
-    mkdir(dir, 0700);
+    MKDIR(dir);
     char *path = token_path();
     FILE *f = fopen(path, "w");
     free(path);
